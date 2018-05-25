@@ -9,7 +9,7 @@ const TOPK_PREDICTIONS = 1;//10
 
 let mobilenet;
 const mobilenetDemo = async () => {
-  status('Loading model...');// for   <div id="status"></div>
+  //status('Loading model...');// for   <div id="status"></div>
 
   mobilenet = await tf.loadModel(MOBILENET_MODEL_PATH);
 
@@ -18,7 +18,7 @@ const mobilenetDemo = async () => {
   // value of `predict`.
   mobilenet.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3])).dispose();
 
-  status('');// for   <div id="status"></div>
+  //status('');// for   <div id="status"></div>
 /*
   // Make a prediction through the locally hosted cat.jpg.
   const catElement = document.getElementById('dog');
@@ -35,12 +35,13 @@ const mobilenetDemo = async () => {
 //document.getElementById('file-container').style.display = '';
 };
 
+var prediction_data = {predictions : []};
 /**
  * Given an image element, makes a prediction through mobilenet returning the
  * probabilities of the top K classes.
  */
 async function predict(imgElement) {
-  status('Predicting...');
+  //status('Predicting...');
 
   const startTime = performance.now();
   const logits = tf.tidy(() => {
@@ -61,10 +62,20 @@ async function predict(imgElement) {
   // Convert logits to probabilities and class names.
   const classes = await getTopKClasses(logits, TOPK_PREDICTIONS);
   const totalTime = performance.now() - startTime;
-  status(`Done in ${Math.floor(totalTime)}ms`);
+  //status(`Done in ${Math.floor(totalTime)}ms`);
 
   // Show the classes in the DOM.
+  appendToData(classes);
   //showResults(imgElement, classes);
+}
+
+function appendToData(classes){
+  console.log(classes);
+  prediction_data.predictions.push({
+    class: classes[0].className,
+    probability: classes[0].probability.toFixed(3)
+  });
+
 }
 
 /**
@@ -121,6 +132,7 @@ filesElement.addEventListener('change', evt => {
       img.onload = () => predict(img);
     };
 
+    prediction_data = {predictions : []};
     // Read in the image file as a data URL.
     reader.readAsDataURL(f);
   }
