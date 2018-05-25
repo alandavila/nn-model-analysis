@@ -19,20 +19,7 @@ const mobilenetDemo = async () => {
   mobilenet.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3])).dispose();
 
   //status('');// for   <div id="status"></div>
-/*
-  // Make a prediction through the locally hosted cat.jpg.
-  const catElement = document.getElementById('dog');
-  if (catElement.complete && catElement.naturalHeight !== 0) {
-    predict(catElement);
-    catElement.style.display = '';
-  } else {
-    catElement.onload = () => {
-      predict(catElement);
-      catElement.style.display = '';
-    }
-  }
-*/
-//document.getElementById('file-container').style.display = '';
+
 };
 
 var prediction_data = {predictions : []};
@@ -64,13 +51,14 @@ async function predict(imgElement) {
   const totalTime = performance.now() - startTime;
   //status(`Done in ${Math.floor(totalTime)}ms`);
 
-  // Show the classes in the DOM.
+  // append data to prediction_date which will be our
+  //souce for plots
   appendToData(classes);
-  //showResults(imgElement, classes);
+
 }
 
 function appendToData(classes){
-  console.log(classes);
+  //console.log(classes);
   prediction_data.predictions.push({
     class: classes[0].className,
     probability: classes[0].probability.toFixed(3)
