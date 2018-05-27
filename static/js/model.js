@@ -156,8 +156,11 @@ function makePlots(){
   //TODO sort classes by frequency
   getFrequencies(grouped_by_class);
   class_frequency.sort(function(a,b){
-    return parseInt(a[1]) < parseInt(b[1]);
+    if (a[1] > b[1]) return -1;
+    if (a[1] < b[1]) return 1;
+    return 0;
   });
+
   //TODO generate array of top 10 classes' frequency
   //TODO generate array of top 10 classes' array of probabilities
 }
