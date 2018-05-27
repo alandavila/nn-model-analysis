@@ -140,7 +140,7 @@ function group(list){
 
 function getFrequencies(grouped){
   Object.keys(grouped).forEach(function(key) {
-    console.log(key, grouped[key]);
+    //console.log(key, grouped[key]);
     class_frequency.push([key, grouped[key].length]);
   });
 }
@@ -184,9 +184,10 @@ function getTopTenPredictions(){
 }
 
 function makePlots(){
+  getTopTenPredictions();
   //TODO histogram plot via d3
   //TODO boxplot via d3
-  //TODO cluster plot via d3
+  //TODO cluster plot via d
 
 }
 
