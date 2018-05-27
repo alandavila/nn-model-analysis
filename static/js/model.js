@@ -138,8 +138,6 @@ function group(list){
   return out_obj;
 }
 
-var class_frequency = [];
-
 function getFrequencies(grouped){
   Object.keys(grouped).forEach(function(key) {
     console.log(key, grouped[key]);
@@ -147,22 +145,49 @@ function getFrequencies(grouped){
   });
 }
 
-function makePlots(){
-  //TODO group predictions by common class
+var class_frequency = [];
+var top_ten_freq = [];
+var top_ten_class_probas = {};
+
+function getTopTenPredictions(){
+  /*
+  group prediction_data.predictions into predicted classes,
+  get the top ten most frequet (top_ten_freq) and
+  get the probabilities assigned to each image that belongs
+  to those top ten classes for each class (top_ten_class_probas)
+  */
+  // group predictions by common class
   grouped_by_class = {}
   class_frequency = []
   grouped_by_class =  group( prediction_data.predictions) ;
-  //console.log(grouped_by_class);
-  //TODO sort classes by frequency
+  // sort classes by frequency
   getFrequencies(grouped_by_class);
   class_frequency.sort(function(a,b){
     if (a[1] > b[1]) return -1;
     if (a[1] < b[1]) return 1;
     return 0;
   });
+  //generate array of top 10 classes' frequency
+  for(var i = 0; i < 10; i++){
+    top_ten_freq.push(class_frequency[i]);
+  }
+  //generate array of top 10 classes' array of probabilities
+  top_ten_freq.forEach(function(item){
+    var current_class = item[0];
+    top_ten_class_probas[current_class] = top_ten_class_probas[current_class] || [];
+    grouped_by_class[current_class].forEach(function(item){
+      top_ten_class_probas[current_class].push(
+        parseFloat(item.probability)
+      );
+    });
+  });
+}
 
-  //TODO generate array of top 10 classes' frequency
-  //TODO generate array of top 10 classes' array of probabilities
+function makePlots(){
+  //TODO histogram plot via d3
+  //TODO boxplot via d3
+  //TODO cluster plot via d3
+
 }
 
 mobilenetDemo();
