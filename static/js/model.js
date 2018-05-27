@@ -23,6 +23,7 @@ const mobilenetDemo = async () => {
 };
 
 var prediction_data = {predictions : []};
+var grouped_by_class = {};
 /**
  * Given an image element, makes a prediction through mobilenet returning the
  * probabilities of the top K classes.
@@ -124,6 +125,41 @@ filesElement.addEventListener('change', evt => {
     // Read in the image file as a data URL.
     reader.readAsDataURL(f);
   }
+  console.log(prediction_data.predictions)
 });
+
+function group(list){
+  var out_obj = {};
+  list.forEach( function(item){
+    var key  =  item.class;
+    out_obj[key] = out_obj[key] || [];
+    out_obj[key].push(item);
+  });
+  return out_obj;
+}
+
+var class_frequency = [];
+
+function getFrequencies(grouped){
+  Object.keys(grouped).forEach(function(key) {
+    console.log(key, grouped[key]);
+    class_frequency.push([key, grouped[key].length]);
+  });
+}
+
+function makePlots(){
+  //TODO group predictions by common class
+  grouped_by_class = {}
+  class_frequency = []
+  grouped_by_class =  group( prediction_data.predictions) ;
+  //console.log(grouped_by_class);
+  //TODO sort classes by frequency
+  getFrequencies(grouped_by_class);
+  class_frequency.sort(function(a,b){
+    return parseInt(a[1]) < parseInt(b[1]);
+  });
+  //TODO generate array of top 10 classes' frequency
+  //TODO generate array of top 10 classes' array of probabilities
+}
 
 mobilenetDemo();
