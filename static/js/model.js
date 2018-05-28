@@ -183,10 +183,43 @@ function getTopTenPredictions(){
   });
 }
 
+function makeViolinPlots(){
+  var data = [{
+  type: 'violin',
+  y: top_ten_class_probas[top_ten_freq[0][0]],//unpack(rows, 'total_bill'),
+  points: 'none',
+  box: {
+    visible: true
+  },
+  boxpoints: false,
+  line: {
+    color: 'black'
+  },
+  fillcolor: '#8dd3c7',
+  opacity: 0.6,
+  meanline: {
+    visible: true
+  },
+  x0: "Total Bill"
+}]
+
+var layout = {
+  title: "",
+  height: 400,
+  width: 400,
+  yaxis: {
+    zeroline: false
+  }
+}
+
+Plotly.plot('violinplot', data, layout);
+}
+
 function makePlots(){
   getTopTenPredictions();
   //TODO histogram plot via d3
   //TODO boxplot via d3
+  makeViolinPlots();
   //TODO cluster plot via d
 
 }
