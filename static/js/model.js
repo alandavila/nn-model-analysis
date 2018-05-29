@@ -183,10 +183,15 @@ function getTopTenPredictions(){
   });
 }
 
+function getProbasArray(){
+  //
+}
+
 function makeViolinPlots(){
   var data = [{
   type: 'violin',
   y: top_ten_class_probas[top_ten_freq[0][0]],//unpack(rows, 'total_bill'),
+  x: top_ten_freq[0][0],
   points: 'none',
   box: {
     visible: true
@@ -200,8 +205,29 @@ function makeViolinPlots(){
   meanline: {
     visible: true
   },
-  x0: "Total Bill"
-}]
+  x0: top_ten_freq[0][0]
+},
+
+{
+type: 'violin',
+y: top_ten_class_probas[top_ten_freq[1][0]],//unpack(rows, 'total_bill'),
+x: top_ten_freq[1][0],
+points: 'none',
+box: {
+  visible: true
+},
+boxpoints: false,
+line: {
+  color: 'black'
+},
+fillcolor: '#8dd3c7',
+opacity: 0.6,
+meanline: {
+  visible: true
+},
+x0: top_ten_freq[1][0]
+}
+]
 
 var layout = {
   title: "",
