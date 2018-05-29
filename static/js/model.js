@@ -183,62 +183,60 @@ function getTopTenPredictions(){
   });
 }
 
+var color_pallete = [
+  '#FA0410',
+  '#FA046C',
+  '#DA12AF',
+  '#D56ED5',
+  '#DBCDE1',
+  '#6F30CA',
+  '#46379C',
+  '#1E38DC',
+  '#53ABEC',
+  '#12E2EC'
+]
+
 function getProbasArray(){
-  //
+  var probas_array = [];
+  for(var i = 0; i < 10; i++){
+    probas_array.push({
+      type: 'violin',
+      y: top_ten_class_probas[top_ten_freq[i][0]],//unpack(rows, 'total_bill'),
+      x: top_ten_freq[i][0],
+      name: top_ten_freq[i][0],
+      points: 'none',
+      box: {
+        visible: true
+      },
+      boxpoints: false,
+      line: {
+        color: 'black'
+      },
+      fillcolor: color_pallete[i],
+      opacity: 0.6,
+      meanline: {
+        visible: true
+      },
+      //x0: top_ten_freq[i][0]
+    })
+  }
+  return probas_array;
 }
 
 function makeViolinPlots(){
-  var data = [{
-  type: 'violin',
-  y: top_ten_class_probas[top_ten_freq[0][0]],//unpack(rows, 'total_bill'),
-  x: top_ten_freq[0][0],
-  points: 'none',
-  box: {
-    visible: true
-  },
-  boxpoints: false,
-  line: {
-    color: 'black'
-  },
-  fillcolor: '#8dd3c7',
-  opacity: 0.6,
-  meanline: {
-    visible: true
-  },
-  x0: top_ten_freq[0][0]
-},
 
-{
-type: 'violin',
-y: top_ten_class_probas[top_ten_freq[1][0]],//unpack(rows, 'total_bill'),
-x: top_ten_freq[1][0],
-points: 'none',
-box: {
-  visible: true
-},
-boxpoints: false,
-line: {
-  color: 'black'
-},
-fillcolor: '#8dd3c7',
-opacity: 0.6,
-meanline: {
-  visible: true
-},
-x0: top_ten_freq[1][0]
-}
-]
-
-var layout = {
-  title: "",
-  height: 400,
-  width: 400,
-  yaxis: {
-    zeroline: false
+  var data = getProbasArray();
+  var layout = {
+    title: "Class probability dist. for top 10 classes",
+    height: 600,
+    width: 600,
+    showlegend: false,
+    yaxis: {
+      zeroline: false
+    }
   }
-}
 
-Plotly.plot('violinplot', data, layout);
+  Plotly.plot('violinplot', data, layout);
 }
 
 function makePlots(){
