@@ -228,23 +228,150 @@ function makeViolinPlots(){
   var data = getProbasArray();
   var layout = {
     title: "Class probability dist. for top 10 classes",
-    height: 600,
-    width: 600,
+    height: 500,
+    width: 960,
     showlegend: false,
     yaxis: {
       zeroline: false
     }
-  }
+  };
 
   Plotly.plot('violinplot', data, layout);
+};
+
+function makeForcePlot(){
+
+ //var data = JSON.stringify(top_ten_class_probas);
+
+ var width = 960;
+ var height = 500;
+
+//nodes to represent a root class
+ var nodes = [
+   {class: top_ten_freq[0][0], frequency: top_ten_freq[0][1] },
+   {class: top_ten_freq[1][0], frequency: top_ten_freq[1][1] },
+   {class: top_ten_freq[2][0], frequency: top_ten_freq[2][1] },
+   {class: top_ten_freq[3][0], frequency: top_ten_freq[3][1] },
+   {class: top_ten_freq[4][0], frequency: top_ten_freq[4][1] },
+   {class: top_ten_freq[5][0], frequency: top_ten_freq[5][1] },
+   {class: top_ten_freq[6][0], frequency: top_ten_freq[6][1] },
+   {class: top_ten_freq[7][0], frequency: top_ten_freq[7][1] },
+   {class: top_ten_freq[8][0], frequency: top_ten_freq[8][1] },
+   {class: top_ten_freq[9][0], frequency: top_ten_freq[9][1] }
+];
+
+
+//top 10 classes to be linked together
+ var links = [
+     {source: 0, target: 1},
+     {source: 1, target: 2},
+     {source: 2, target: 3},
+     {source: 3, target: 4},
+     {source: 4, target: 5},
+     {source: 5, target: 6},
+     {source: 6, target: 7},
+     {source: 7, target: 8},
+     {source: 8, target: 9},
+     {source: 9, target: 10}
+ ];
+
+ var svg = d3.select("#forcePlot").append("svg")
+   .attr("width", width)
+   .attr("height", height);
+
+ const simulation = d3.forceSimulation()
+   .force("charge", d3.forceManyBody().strength(-60))
+   .force("center", d3.forceCenter(width / 2, height / 2));
+
+ function getNodeColor(node) {
+   return node.class === 1 ? "red" : "gray"
+ };
+
+
+//need to make the radius dependent on class frequency for parent nodes
+ const nodeElements = svg.append("g")
+     .selectAll("circle")
+     .data(nodes)
+     .enter().append("circle")
+       .attr("r", node => node.frequency)
+       .attr("fill", "getNodeColor");
+
+ const textElements = svg.append("g")
+     .selectAll("text")
+     .data(nodes)
+     .enter().append("text")
+       .text(node => node.class)
+       .attr("font-size", 15)
+       .attr("dx", 10)
+       .attr("dy", 4);
+
+ simulation.nodes(nodes).on("tick", () => {
+   nodeElements
+     .attr("cx", node => node.x)
+     .attr("cy", node => node.y);
+   textElements
+     .attr("x", node => node.x)
+     .attr("y", node => node.y);
+   linkElements
+     .attr("x1", link => link.source.x)
+     .attr("y1", link => link.source.y)
+     .attr("x2", link => link.target.x)
+     .attr("y2", link => link.target.y)
+ });
+
+ simulation.force("link", d3.forceLink()
+ .id(link => link.class)
+ .strength(.7))
+
+ const linkElements = svg.append("g")
+ .selectAll("line")
+ .data(links)
+ .enter().append("line")
+   .attr("stroke-width", 1)
+   .attr("stroke", "#E5E5E5");
+
+};
+
+function makeBarGraph() {
+var x_data = [];
+var y_data = [];
+
+for(i=0; i<10;i++){
+  x_data.push(top_ten_freq[i][0]);
+  y_data.push(top_ten_freq[i][1]);
+}
+
+var trace1 = {
+  type: "bar",
+//for(var i = 0; i < 10; i++){
+  x: x_data,
+  y: y_data,
+//}
+  name: "Top Frequency",
+//  orientation: "h",
+  fillcolor: color_pallete,
+  opacity: 0.6,
+};
+var data1 = [trace1];
+var layout = {
+title: "Top Frequency Bar Graph ",
+  height: 500,
+  width: 960,
+xaxis: { title: "Predicted Class" },
+yaxis: { title: "Class Frequency" }
+};
+
+Plotly.plot('bargraph', data1, layout);
 }
 
 function makePlots(){
   getTopTenPredictions();
-  //TODO histogram plot via d3
-  //TODO boxplot via d3
+  // histogram plot via d3
+  makeBarGraph();
+  // cluster plot via d
+  makeForcePlot();
+  //boxplot via d3
   makeViolinPlots();
-  //TODO cluster plot via d
 
 }
 
