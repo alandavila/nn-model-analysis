@@ -24,6 +24,9 @@ const mobilenetDemo = async () => {
 
 var prediction_data = {predictions : []};
 var grouped_by_class = {};
+var class_frequency = [];
+var top_ten_freq = [];
+var top_ten_class_probas = {};
 /**
  * Given an image element, makes a prediction through mobilenet returning the
  * probabilities of the top K classes.
@@ -122,6 +125,9 @@ filesElement.addEventListener('change', evt => {
     };
 
     prediction_data = {predictions : []};
+    class_frequency = [];
+    top_ten_freq = [];
+    top_ten_class_probas = {};
     // Read in the image file as a data URL.
     reader.readAsDataURL(f);
   }
@@ -145,9 +151,7 @@ function getFrequencies(grouped){
   });
 }
 
-var class_frequency = [];
-var top_ten_freq = [];
-var top_ten_class_probas = {};
+
 
 function getTopTenPredictions(){
   /*
@@ -236,7 +240,7 @@ function makeViolinPlots(){
     }
   };
 
-  Plotly.plot('violinplot', data, layout);
+  Plotly.newPlot('violinplot', data, layout);
 };
 
 function makeForcePlot(){
@@ -361,10 +365,12 @@ xaxis: { title: "Predicted Class" },
 yaxis: { title: "Class Frequency" }
 };
 
-Plotly.plot('bargraph', data1, layout);
+Plotly.newPlot('bargraph', data1, layout);
 }
 
 function makePlots(){
+  //clear plots if already exist
+
   getTopTenPredictions();
   // histogram plot via d3
   makeBarGraph();
