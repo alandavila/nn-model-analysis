@@ -369,8 +369,8 @@ Plotly.newPlot('bargraph', data1, layout);
 }
 
 function makePlots(){
-  //clear plots if already exist
-
+  //clear force plot if already present
+  d3.select("#forcePlot > svg").remove();
   getTopTenPredictions();
   // histogram plot via d3
   makeBarGraph();
