@@ -3,6 +3,15 @@
  /*background: url("aineurons.jpg") no-repeat cover center*/
 }
 
+.marginalize {
+  margin-bottom: 20px;
+
+}
+
+.imgDiv {
+  overflow: scroll;
+}
+
 .nav-title {
 }
 .links line {

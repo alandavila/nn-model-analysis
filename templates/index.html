@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!--<link rel="icon" href="favicon.ico">-->
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/styles.css') }}">
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <script src="{{ url_for('static', filename='js/image_classes.js') }}" type="text/javascript"></script>
@@ -58,9 +60,16 @@
             </div>
           </div>
 
-          <div class="my-4" id="forcePlot" width="900" height="380"></div>
-          <div class='col-sm-6' id='bargraph'></div>
-          <div class='col-sm-6' id='violinplot'></div>
+        <div class="row">
+          <div class="col-md-9" id="forcePlot"></div>
+          <div class="col-md-3" id="sideForce">
+            <h6 class="h6">Image Bin</h6>
+            <div id="imageDiv" class="imgDiv"></div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="clearImages('imageDiv')">Clear</button>
+          </div>
+        </div>
+          <div class='col-sm-6 marginalize' id='bargraph'></div>
+          <div class='col-sm-6 marginalize' id='violinplot'></div>
 
         </main>
       </div>
