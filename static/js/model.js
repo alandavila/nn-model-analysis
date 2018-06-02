@@ -162,6 +162,9 @@ function getTopTenPredictions(){
   to those top ten classes for each class (top_ten_class_probas)
   */
   // group predictions by common class
+  top_ten_freq = [];
+  top_ten_class_probas = {};
+
   grouped_by_class = {}
   class_frequency = []
   grouped_by_class =  group( prediction_data.predictions) ;
@@ -310,22 +313,22 @@ for (let x = 0; x < 10; x++) {
 };
 
 //children image nodes
-for (let x = 0; x < top_ten_class_probas[top_ten_freq[x][0]].length; x++) {
+for (let x = 0; x < /*top_ten_class_probas[top_ten_freq[x][0]].length*/10; x++) {
   for (let i = 0; i < top_ten_class_probas[top_ten_freq[x][0]].length; i++) {
     nodes.push({"name": "Class"+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":prediction_data.predictions[i].image.src})// 
   };
 };
 
 //links to parent node
-for (let x = 0; x < top_ten_class_probas[top_ten_freq[x][0]].length; x++) {
+for (let x = 0; x < /*top_ten_class_probas[top_ten_freq[x][0]].length*/10; x++) {
   for (let j=0; j < top_ten_class_probas[top_ten_freq[x][0]].length; j++){
     links.push({"source": top_ten_freq[x][0], "target": "Class"+x+" "+"image"+j})
   };
 };
 
 //links from parent node to parent node
-for (let x = 0; x < 9; x++) {
-  links.push({"source": top_ten_freq[x][0], "target": (top_ten_freq[x+1][0])});
+for (let x = 0; x < 10; x++) {
+  links.push({"source": top_ten_freq[x][0], "target": (top_ten_freq[x][0])});
 };
 
 var link = svg.append("g")
