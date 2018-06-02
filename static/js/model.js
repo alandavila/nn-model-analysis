@@ -57,7 +57,7 @@ async function predict(imgElement) {
 
   // append data to prediction_date which will be our
   //souce for plots
-  appendToData(classes);
+  appendToData(classes, imgElement);
 
 }
 
@@ -65,7 +65,8 @@ function appendToData(classes){
   //console.log(classes);
   prediction_data.predictions.push({
     class: classes[0].className,
-    probability: classes[0].probability.toFixed(3)
+    probability: classes[0].probability.toFixed(3),
+    image: imgElement
   });
 
 }
@@ -245,94 +246,179 @@ function makeViolinPlots(){
 
 function makeForcePlot(){
 
- //var data = JSON.stringify(top_ten_class_probas);
-
  var width = 960;
  var height = 500;
 
-//nodes to represent a root class
- var nodes = [
-   {class: top_ten_freq[0][0], frequency: top_ten_freq[0][1] },
-   {class: top_ten_freq[1][0], frequency: top_ten_freq[1][1] },
-   {class: top_ten_freq[2][0], frequency: top_ten_freq[2][1] },
-   {class: top_ten_freq[3][0], frequency: top_ten_freq[3][1] },
-   {class: top_ten_freq[4][0], frequency: top_ten_freq[4][1] },
-   {class: top_ten_freq[5][0], frequency: top_ten_freq[5][1] },
-   {class: top_ten_freq[6][0], frequency: top_ten_freq[6][1] },
-   {class: top_ten_freq[7][0], frequency: top_ten_freq[7][1] },
-   {class: top_ten_freq[8][0], frequency: top_ten_freq[8][1] },
-   {class: top_ten_freq[9][0], frequency: top_ten_freq[9][1] }
-];
-
-
-//top 10 classes to be linked together
- var links = [
-     {source: 0, target: 1},
-     {source: 1, target: 2},
-     {source: 2, target: 3},
-     {source: 3, target: 4},
-     {source: 4, target: 5},
-     {source: 5, target: 6},
-     {source: 6, target: 7},
-     {source: 7, target: 8},
-     {source: 8, target: 9},
-     {source: 9, target: 10}
- ];
+ var color = d3.scaleOrdinal(d3.schemeCategory20);
 
  var svg = d3.select("#forcePlot").append("svg")
    .attr("width", width)
    .attr("height", height);
 
- const simulation = d3.forceSimulation()
-   .force("charge", d3.forceManyBody().strength(-60))
-   .force("center", d3.forceCenter(width / 2, height / 2));
+   // values for all forces
+forceProperties = {
+    center: {
+        x: 0.5,
+        y: 0.5
+    },
+    charge: {
+        enabled: true,
+        strength: -30,
+        distanceMin: 1,
+        distanceMax: 2000
+    },
+    collide: {
+        enabled: true,
+        strength: .7,
+        iterations: 1,
+        radius: 5
+    },
+    forceX: {
+        enabled: false,
+        strength: .1,
+        x: .5
+    },
+    forceY: {
+        enabled: false,
+        strength: .1,
+        y: .5
+    },
+    link: {
+        enabled: true,
+        distance: 30,
+        iterations: 1
+    }
+}
 
- function getNodeColor(node) {
-   return node.class === 1 ? "red" : "gray"
- };
+ var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().distance(100).strength(0.5).id(function(d) { return d.name; }))
+    .force("charge", d3.forceManyBody().strength(-3) ) //or null
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    //.force("forceX", d3.forceX())
+    //.force("forceY", d3.forceY());
 
 
-//need to make the radius dependent on class frequency for parent nodes
- const nodeElements = svg.append("g")
-     .selectAll("circle")
-     .data(nodes)
-     .enter().append("circle")
-       .attr("r", node => node.frequency)
-       .attr("fill", "getNodeColor");
 
- const textElements = svg.append("g")
-     .selectAll("text")
-     .data(nodes)
-     .enter().append("text")
-       .text(node => node.class)
-       .attr("font-size", 15)
-       .attr("dx", 10)
-       .attr("dy", 4);
 
- simulation.nodes(nodes).on("tick", () => {
-   nodeElements
-     .attr("cx", node => node.x)
-     .attr("cy", node => node.y);
-   textElements
-     .attr("x", node => node.x)
-     .attr("y", node => node.y);
-   linkElements
-     .attr("x1", link => link.source.x)
-     .attr("y1", link => link.source.y)
-     .attr("x2", link => link.target.x)
-     .attr("y2", link => link.target.y)
- });
+ var nodes = [];
+ var links = [];
 
- simulation.force("link", d3.forceLink()
- .id(link => link.class)
- .strength(.7))
+//parent nodes
+for (let x = 0; x < 10; x++) {
+  nodes.push({"name": top_ten_freq[x][0], "freq": (top_ten_freq[x][1]), "parent": true});
+};
 
- const linkElements = svg.append("g")
- .selectAll("line")
- .data(links)
- .enter().append("line")
-   .attr("stroke-width", 1)
-   .attr("stroke", "#E5E5E5");
+//children image nodes
+for (let x = 0; x < top_ten_class_probas[top_ten_freq[x][0]].length; x++) {
+  for (let i = 0; i < top_ten_class_probas[top_ten_freq[x][0]].length; i++) {
+    nodes.push({"name": "Class"+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":prediction_data.predictions[i].image.src})
+  };
+};
+
+//links to parent node
+for (let x = 0; x < top_ten_class_probas[top_ten_freq[x][0]].length; x++) {
+  for (let j=0; j < top_ten_class_probas[top_ten_freq[x][0]].length; j++){
+    links.push({"source": top_ten_freq[x][0], "target": "Class"+x+" "+"image"+j})
+  };
+};
+
+//links from parent node to parent node
+for (let x = 0; x < 9; x++) {
+  links.push({"source": top_ten_freq[x][0], "target": (top_ten_freq[x+1][0])});
+};
+
+var link = svg.append("g")
+        .attr("class", "links")
+      .selectAll("line")
+      .data(links)
+      .enter().append("line")
+        .attr("stroke-width", 2);
+
+    var node = svg.append("g")
+        .attr("class", "nodes")
+      .selectAll("circle")
+      .data(nodes)
+      .enter().append("circle")
+      .on("click", handleClick)
+      .on("mouseover", handleMouseOver)
+      .on("mouseout", handleMouseOut)
+        .attr("r", d => (d.freq))
+        .attr("fill", colorizer)
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+
+
+    node.append("title")
+        .text(function(d) { return (d.name +" "+ d.freq) ; });
+
+    simulation
+        .nodes(nodes)
+        .on("tick", ticked);
+
+    simulation.force("link")
+        .links(links);
+
+    function colorizer(d) {
+      //if parent node, color orange, else default color (ternary operation)
+      //return nodes.parent == true ? "orange": "blue";
+      return d.parent ? "orange": "rgb(31, 119, 180)";
+
+    };
+
+    // Create Event Handlers for mouse
+    function handleClick() {
+      //get the image and display either as popup or in a new div
+      alert("You clicked me!" + this.node);
+    };
+    function handleMouseOver() {  // Add interactivity
+        // Use D3 to select element, change color and size
+          d3.select(this)
+            .style("fill", "#00AAFF");
+          // Get current event info
+          console.log(d3.event);
+          // Get x & y co-ordinates
+          //console.log(d3.mouse(this));
+      };
+
+    function handleMouseOut() {
+
+      d3.select(this)
+        .style("fill", colorizer);
+
+    }
+
+    function ticked() {
+      link
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+      node
+          .attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; });
+    };
+//  });
+
+  function dragstarted(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  };
+
+  function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  };
+
+  function dragended(d) {
+    if (!d3.event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+  };
 
 };
 
