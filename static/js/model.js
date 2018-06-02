@@ -61,7 +61,7 @@ async function predict(imgElement) {
 
 }
 
-function appendToData(classes){
+function appendToData(classes, imgElement){
   //console.log(classes);
   prediction_data.predictions.push({
     class: classes[0].className,
@@ -252,8 +252,8 @@ function makeForcePlot(){
  var color = d3.scaleOrdinal(d3.schemeCategory20);
 
  var svg = d3.select("#forcePlot").append("svg")
-   .attr("width", width)
-   .attr("height", height);
+   .attr("viewBox", "0 0 " + width + " " + height)
+   .attr("preserveAspectRatio", "xMidYMid meet");
 
    // values for all forces
 forceProperties = {
@@ -292,8 +292,9 @@ forceProperties = {
 
  var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().distance(100).strength(0.5).id(function(d) { return d.name; }))
-    .force("charge", d3.forceManyBody().strength(-3) ) //or null
+    //.force("charge", d3.forceManyBody().strength(-3) ) //or null
     .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("attraceForce",d3.forceManyBody().strength(-100));
     //.force("forceX", d3.forceX())
     //.force("forceY", d3.forceY());
 
@@ -311,7 +312,7 @@ for (let x = 0; x < 10; x++) {
 //children image nodes
 for (let x = 0; x < top_ten_class_probas[top_ten_freq[x][0]].length; x++) {
   for (let i = 0; i < top_ten_class_probas[top_ten_freq[x][0]].length; i++) {
-    nodes.push({"name": "Class"+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":prediction_data.predictions[i].image.src})
+    nodes.push({"name": "Class"+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":prediction_data.predictions[i].image.src})// 
   };
 };
 
