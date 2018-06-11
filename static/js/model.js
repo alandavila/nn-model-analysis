@@ -27,6 +27,7 @@ var grouped_by_class = {};
 var class_frequency = [];
 var top_ten_freq = [];
 var top_ten_class_probas = {};
+var top_ten_class_images = {};
 /**
  * Given an image element, makes a prediction through mobilenet returning the
  * probabilities of the top K classes.
@@ -129,6 +130,7 @@ filesElement.addEventListener('change', evt => {
     class_frequency = [];
     top_ten_freq = [];
     top_ten_class_probas = {};
+    top_ten_class_images = {};
     // Read in the image file as a data URL.
     reader.readAsDataURL(f);
   }
@@ -164,6 +166,7 @@ function getTopTenPredictions(){
   // group predictions by common class
   top_ten_freq = [];
   top_ten_class_probas = {};
+  top_ten_class_images = {};
 
   grouped_by_class = {}
   class_frequency = []
@@ -183,9 +186,13 @@ function getTopTenPredictions(){
   top_ten_freq.forEach(function(item){
     var current_class = item[0];
     top_ten_class_probas[current_class] = top_ten_class_probas[current_class] || [];
+    top_ten_class_images[current_class] = top_ten_class_images[current_class] || [];
     grouped_by_class[current_class].forEach(function(item){
       top_ten_class_probas[current_class].push(
         parseFloat(item.probability)
+      );
+      top_ten_class_images[current_class].push(
+        item.image
       );
     });
   });
@@ -279,7 +286,7 @@ for (let x = 0; x < 10; x++) {
 //children image nodes
 for (let x = 0; x < 10; x++) {
   for (let i = 0; i < top_ten_class_probas[top_ten_freq[x][0]].length; i++) {
-    nodes.push({"name": "Class"+" "+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":prediction_data.predictions[i].image.src})//
+    nodes.push({"name": "Class"+" "+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":top_ten_class_images[top_ten_freq[x][0]][i].src})//
   };
 };
 
