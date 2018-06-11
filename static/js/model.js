@@ -286,14 +286,16 @@ for (let x = 0; x < 10; x++) {
 //children image nodes
 for (let x = 0; x < 10; x++) {
   for (let i = 0; i < top_ten_class_probas[top_ten_freq[x][0]].length; i++) {
-    nodes.push({"name": "Class"+" "+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":top_ten_class_images[top_ten_freq[x][0]][i].src})//
+    //nodes.push({"name": "Class"+" "+x+" "+"image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i])*10, "child": true, "src":top_ten_class_images[top_ten_freq[x][0]][i].src})//
+    nodes.push({"name": "Class:"+" "+String(top_ten_freq[x][0])+" "+";image"+i, "freq": (top_ten_class_probas[top_ten_freq[x][0]][i]), "child": true, "src":top_ten_class_images[top_ten_freq[x][0]][i].src})//
   };
 };
 
 //links to parent node
 for (let x = 0; x < 10; x++) {
   for (let j=0; j < top_ten_class_probas[top_ten_freq[x][0]].length; j++){
-    links.push({"source": top_ten_freq[x][0], "target": "Class"+" "+x+" "+"image"+j})
+    links.push({"source": top_ten_freq[x][0], "target": "Class:"+" "+String(top_ten_freq[x][0])+" "+";image"+j})
+    //links.push({"source": top_ten_freq[x][0], "target": "Class"+" "+x+" "+"image"+j})
   };
 };
 
@@ -321,7 +323,8 @@ var link = g.append("g")
       .on("click", function(d){return handleClick(d.src)})
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut)
-        .attr("r", d => (d.freq))
+        //.attr("r", d => (d.freq))
+        .attr("r", d => (d.freq.toString().indexOf('.') != -1 ? d.freq*10: d.freq))
         .attr("fill", colorizer)
         .call(d3.drag()
             .on("start", dragstarted)
@@ -329,7 +332,7 @@ var link = g.append("g")
             .on("end", dragended));
 
     node.append("title")
-        .text(function(d) { return (d.name +" "+ d.freq) });
+        .text(function(d) { return (d.name +": "+ d.freq) });
 
     simulation
         .nodes(nodes)
