@@ -34,7 +34,7 @@ with the highest probability for plotting and analysis.
 
 
 
-![dashboard](static/resources/dashboard.PNG)
+![dashboard](static/resources/Dashboard.PNG)
 
 
 # App requirements.
